@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body style="margin: 20px;">
+    <div id="searchPlace" style="text-align: center;">
+        <h1>NoteBook</h1>
+        <label for="filter">Search Note : </label>
+        <input type="text" name="filter" id="filter"/><br>
+        <p id="total"></p>
+        <p id="showing"></p>
+        
+    </div>
+    <div style="margin-top: 100px;">
+        <form onsubmit="handleFormSubmit(event)">
+            <label for="title">Note Title : </label>
+            <input type="text" name="title" id="title"/><br>
+            <label for="desc">Note Desc : </label><br>
+            <textarea id="desc" name="desc" rows="4" cols="50"></textarea><br>
+            <input type="submit" value="Add To BOOK">
+          </form>
+    </div>
+    <div>
+        <ul></ul>
+    </div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js"></script>
+<script src="index.js"></script>
+</html>
