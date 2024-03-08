@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+</head>
+<body style="margin: 10">
+  <h1 style=" text-align: center;">Bookmark Website</h1>
+  <form onsubmit="handleFormSubmit(event)">
+    <label for="webTitle">Website title : </label>
+    <input type="text" name="webTitle" id="webTitle" /><br>
+    <label for="webLink">Website link : </label>
+    <input type="url" name="webLink" id="webLink" /><br>
+    <button type="submit">Add</button><br><br>
+  </form>
+  <h2>All Bookmark</h2>
+  <ul></ul>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js"></script>
+<script src="index.js"></script>
+</html>
