@@ -1,10 +1,10 @@
 const fs = require('fs');
 
-const requestHandler=(req,res)=>{
+const requestHandler=(req,res) => {
     const url = req.url;
     const method = req.method;
     if (url === '/') {
-        fs.readFile('message.txt',{encoding: 'utf-8'},(err,data)=>{
+        fs.readFile('message.txt',{encoding: 'utf-8'},(err,data) => {
             if (err) {
                 console.log(err);
             } else {
