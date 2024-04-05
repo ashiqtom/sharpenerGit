@@ -2,7 +2,7 @@ exports.getContact=(req, res,next) => {
     res.send(`
         <html> 
             <header>
-                <nav>
+                <nav> 
                     <ul>
                         <li><a href="/contact">Contact Us</a></li>
                         <li><a href="/login">login</a></li>

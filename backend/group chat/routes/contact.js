@@ -8,4 +8,4 @@ router.get('/contact',contactController.getContact);
 
 router.get('/success', contactController.getSuccess);
 
-module.exports=router;
+module.exports=router; 
