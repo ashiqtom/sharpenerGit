@@ -2,49 +2,10 @@ const express=require('express');
 
 const router=express.Router();
 
-router.get('/contact', (req, res) => {
-    res.send(`
-        <html> 
-            <header>
-                <nav>
-                    <ul>
-                        <li><a href="/contact">Contact Us</a></li>
-                        <li><a href="/login">login</a></li>
-                        <li><a href="/">message</a></li>
-                    </ul>
-                </nav>
-            </header> 
-            <body>
-                <h1>Enter the name and email id</h1>
-                <form action="/success">
-                    <label for="name">Name:</label>
-                    <input id="name" type="text" name="name"><br><br>
-                    <label for="email">Email:</label>
-                    <input id="email" type="text" name="email"><br><br>
-                    <button type="submit">submit</button>
-                </form>
-            </body>
-        </html> 
-    `);
-});
+const contactController=require('../controllers/contact');
 
-router.get('/success', (req, res) => {
-    res.send(`
-        <html> 
-            <header>
-                <nav>
-                    <ul>
-                        <li><a href="/contact">Contact Us</a></li>
-                        <li><a href="/login">login</a></li>
-                        <li><a href="/">message</a></li>
-                    </ul>
-                </nav>
-            </header> 
-            <body>
-                <h1>Form successfuly filled</h1>
-            </body>
-        </html> 
-    `);
-});
+router.get('/contact',contactController.getContact);
+
+router.get('/success', contactController.getSuccess);
 
 module.exports=router;
