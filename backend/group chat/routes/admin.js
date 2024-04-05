@@ -7,6 +7,15 @@ router.get('/', (req, res) => {
     fs.readFile('message.txt', 'utf8', (err, data) => {
         res.send(`
             <html>
+                <header>
+                    <nav>
+                        <ul>
+                            <li><a href="/contact">Contact Us</a></li>
+                            <li><a href="/login">login</a></li>
+                            <li><a href="/">message</a></li>
+                        </ul>
+                    </nav>
+                </header> 
                 <body>
                     <h1>Enter the message...</h1>
                     <p>${data}</p>
