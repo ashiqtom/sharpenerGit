@@ -1,10 +1,10 @@
 const fs = require('fs');
 
-const requestHandler = (req,res) => {
+const requestHandler=(req,res)=>{
     const url = req.url;
     const method = req.method;
     if (url === '/') {
-        fs.readFile('message.txt',{encoding: 'utf-8'},(err,data) => {
+        fs.readFile('message.txt',{encoding: 'utf-8'},(err,data)=>{
             if (err) {
                 console.log(err);
             } else {
@@ -26,7 +26,6 @@ const requestHandler = (req,res) => {
         return req.on('end', () => {
             const parsedBody = Buffer.concat(body).toString();
             const message = parsedBody.split('=')[1];
-            console.log(message)
             fs.writeFile('message.txt', message,(err)=>{
                 if(err){
                     console.log(err);
@@ -47,15 +46,4 @@ const requestHandler = (req,res) => {
     }
 }
 
-//module.exports=requestHandler;
-
-module.exports = {
-    handler : requestHandler,
-    someText : 'some text in routes file'
-}
-
-// module.exports.handler=requestHandler;
-// module.exports.someText='Some text form routes'
-
-// exports.handler=requestHandler;
-// exports.someText='Some text form routes';
+module.exports=requestHandler;
