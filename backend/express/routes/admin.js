@@ -10,4 +10,4 @@ router.get('/add-product',  productController.getAddProduct);
 //admin/add-product -with POST
 router.post('/add-product',productController.postAddProduct);
 
-module.exports=router;   
+module.exports=router;    
