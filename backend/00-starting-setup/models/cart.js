@@ -6,7 +6,7 @@ const p = path.join(
   'data',
   'cart.json'
 );
- 
+
 module.exports = class Cart {
   static addProduct(id, productPrice) {
     // Fetch the previous cart

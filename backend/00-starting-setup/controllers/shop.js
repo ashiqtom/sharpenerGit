@@ -8,7 +8,7 @@ exports.getProducts = (req, res, next) => {
       pageTitle: 'All Products',
       path: '/products'
     });
-  }); 
+  });
 };
 
 exports.getProduct = (req, res, next) => {
