@@ -27,5 +27,5 @@ exports.getProducts = (req, res, next) => {
       pageTitle: 'Admin Products',
       path: '/admin/products'
     });
-  });
+  }); 
 };
