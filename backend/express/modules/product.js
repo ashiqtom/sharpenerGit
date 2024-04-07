@@ -19,6 +19,7 @@
         this.title=t;
     }
     save(){
+        this.id=math.random()
         getProductsFromFile(products=>{
             products.push(this);
             fs.writeFile(p,JSON.stringify(products),(err)=>{

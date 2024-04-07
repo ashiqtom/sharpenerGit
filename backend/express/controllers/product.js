@@ -23,7 +23,7 @@ exports.getProducts = (req, res, next) => {
             }
 
             // Create HTML list items for each product
-            const productListHtml = products.map(product => `<li>${product.title}</li>`).join('');
+            const productListHtml = products.map(product => `<li>${product.title} <a href="/product/${product.id}" >Details</a></li>`).join('');
 
             // Inject the product list into the shop.html file
             const modifiedHtml = fileContent.replace('<!-- Product items will be dynamically inserted here -->', productListHtml);
