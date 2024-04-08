@@ -6,7 +6,7 @@ exports.getAddProduct = (req, res, next) => {
     path: '/admin/add-product',
     editing: false
   });
-};
+}; 
 
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
@@ -63,3 +63,9 @@ exports.getProducts = (req, res, next) => {
     });
   });
 };
+
+exports.postDeleteProduct=(req,res,next)=>{
+  const prodId=req.body.productId;
+  Product.deleteById(prodId);
+  res.redirect('./admin/products')
+}
