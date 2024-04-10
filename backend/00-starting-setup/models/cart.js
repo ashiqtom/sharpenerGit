@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const { postDeleteProduct } = require('../controllers/admin');
 
 const p = path.join(
   path.dirname(process.mainModule.filename),
@@ -39,8 +38,6 @@ module.exports = class Cart {
     });
   }
 
- 
-  
   static deleteProduct(id, productPrice) {
     fs.readFile(p, (err, fileContent) => {
       if (err) {
@@ -63,6 +60,7 @@ module.exports = class Cart {
       });
     });
   }
+
   static getCart(cb) {
     fs.readFile(p, (err, fileContent) => {
       const cart = JSON.parse(fileContent);
