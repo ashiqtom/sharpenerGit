@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      text-align: center;
+      padding: 20px 0;
+      background-color: #f0f0f0;
+    }
+
+    form {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    label {
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #007bff;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    ul li {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>BOOKING APPOINTMENT APP</h1>
+  <form onsubmit="handleFormSubmit(event)">
+    <label for="username">Username</label><br>
+    <input type="text" name="username" id="username" required /><br><br>
+    <label for="email">Email</label><br>
+    <input type="email" name="email" id="email" required /><br><br>
+    <label for="phone">Phone No</label><br>
+    <input type="tel" name="phone" id="phone" required /><br><br>
+    <button type="submit">Submit</button>
+  </form>
+  <ul></ul>
+
+  <!-- Include JavaScript libraries/scripts here -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.5.1/axios.min.js"></script>
+  <script src="index.js"></script>
+</body>
+
+</html>
