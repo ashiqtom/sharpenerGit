@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracker</title>
+</head>
+<body style="margin: 0">
+  <form onsubmit="handleFormSubmit(event)">
+    <label for="amount">Choose expense amount:</label><br>
+    <input type="number" name="amount" id="amount"/><br><br>
+
+    <label for="description">Enter description:</label><br>
+    <input type="text" name="description" id="description"/><br><br>
+
+    <label for="category">Choose a category:</label><br>
+    <select name="category" id="category">
+      <option value="">Choose..</option>
+      <option value="Rent">Rent</option>
+      <option value="Food">Food</option>
+      <option value="Travel">Travel</option>
+    </select><br><br>
+
+    <button type="submit">Add Expense</button><br><br>
+  </form>
+
+  <ul id="expenseList"></ul>
+</body>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="index.js"></script>
+</html>
