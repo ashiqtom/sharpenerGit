@@ -42,9 +42,43 @@ exports.getIndex = (req, res, next) => {
     });
 };
 
+// //fetch all the users who have product id =1 in their cart
+// exports.getCart = (req, res, next) => {
+//   // Assuming req.user is already set by middleware to the logged-in user
+//   const userId = req.user.id;
+
+//   Cart.findOne({ where: { userId: userId } })
+//     .then(cart => {
+//       return cart.getProducts({ where: { id: 2 } }); // Filter products by product ID
+//     })
+//     .then(products => {
+//       res.render('shop/cart', {
+//         path: '/cart',
+//         pageTitle: 'Your Cart',
+//         products: products
+//       });
+//     })
+//     .catch(err => {
+//       console.log(err);
+//       // Handle error appropriately
+//       res.status(500).send('Internal Server Error');
+//     });
+// };
+
+//fetch all the products in cart of user id =1;
 exports.getCart = (req, res, next) => {
   req.user
     .getCart()
+    // .then(cart=>{
+    //   return cart.getProducts({ where: { userId: 1 } });
+    // })
+    // .then(products => {
+    //   res.render('shop/cart', {
+    //   path: '/cart',
+    //   pageTitle: 'Your Cart',
+    //   products: products
+    // })
+    // })
     .then(cart => {
       return cart
         .getProducts()
@@ -59,6 +93,7 @@ exports.getCart = (req, res, next) => {
     })
     .catch(err => console.log(err));
 };
+
 
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
