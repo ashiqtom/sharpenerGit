@@ -31,6 +31,23 @@ async function displayExpenseOnScreen(expenseDetails) {
   deleteButton.onclick = async () => {
     try {
       await axios.delete(`${baseUrl}/${expenseDetails.id}`);
+      /*How Closures Work Here:
+        The key aspect of this implementation is the use of a closure within the 
+        deleteButton.onclick event handler function:
+        
+        deleteButton.onclick = async () => {
+          try {
+            await axios.delete(`${baseUrl}/${expenseDetails.id}`);
+            parentElem.removeChild(listItem);
+          } catch (error) {
+            console.error('Delete failed:', error);
+          }
+        };
+        The arrow function assigned to deleteButton.onclick captures and retains access 
+        to the expenseDetails object from the outer scope of displayExpenseOnScreen.
+        This means that when the delete button is clicked, the event handler 
+        function still has access to expenseDetails, including expenseDetails.id,
+        allowing it to make the DELETE request with the correct expense ID.*/
       parentElem.removeChild(listItem);
     } catch (error) {
       console.error('Delete failed:', error);
