@@ -63,7 +63,6 @@ async function submitAttendance() {
             date: selectedDate,
             attendance: attendanceData
         };
-        
         const response = await axios.post(baseUrl, requestBody);
         displayAttendanceStatus(response.data)
     } catch (error) {
