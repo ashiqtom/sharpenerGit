@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div>
+            <input type="date" id="date">
+            <button onclick="searchAttendance()">Search</button>
+        </div>
+        <button onclick="showAttendanceReport()">Attendance Report</button>
+    </header>
+    <main>
+        <table id="attendanceTable" style="display: none;">
+            <tbody id="attendanceTableBody"></tbody>
+        </table>
+        <button id="submitBtn" style="display: none;" onclick="submitAttendance()">Submit Attendance</button>
+    </main>
+</body>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="index.js"></script>
+</html>
