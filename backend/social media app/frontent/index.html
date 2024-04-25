@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Media App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Social Media App</h1>
+        <div class="form-container">
+            <input type="text" id="imageLink" placeholder="Paste Image Link">
+            <input type="text" id="description" placeholder="Description">
+            <button onclick="submit()">Submit</button>
+        </div>
+        <div id="posts-container"></div>
+    </div>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="scripts.js"></script>
+</body>
+</html>
