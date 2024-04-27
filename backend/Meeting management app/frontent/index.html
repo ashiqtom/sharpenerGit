@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Scheduler</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Styles for main content */
+        body {
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Container for meeting schedules */
+        #containerWrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+        }
+
+        #meetingSchedulesContainer {
+            width: 250px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            margin-right: 20px; /* Spacing between schedules container and modal */
+        }
+
+        /* Modal overlay and content */
+        .modal-overlay {
+            display: none;
+            position: relative; /* Relative positioning for modal */
+            width: 250px; /* Adjust modal width as needed */
+            margin-left: auto; /* Push modal to the right */
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Booking details display */
+        #bookingDetails {
+            width: 250px;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .booking-item {
+            margin-bottom: 20px;
+        }
+
+        .cancel-btn {
+            background-color: #ff6961;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div>                
+        <div id="containerWrapper">
+            <!-- Container for meeting schedules -->
+            <div id="meetingSchedulesContainer"></div>
+
+            <!-- Modal for input -->
+            <div class="modal-overlay" id="modalOverlay">
+                <div class="modal" id="modalContent">
+                    <h2>Book a Meeting Slot</h2>
+                    <form id="meetingForm">
+                        <label for="name">Your Name:</label>
+                        <input type="text" id="name" name="name" required><br><br>
+                        <label for="place">Meeting Place:</label>
+                        <input type="text" id="place" name="place" required><br><br>
+                        <button type="submit">Book</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Display booked meeting details -->
+        <div id="bookingDetails" style="display: none;">
+            <h2>Existing Bookings</h2>
+            <div id="bookingList"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('meetingSchedulesContainer');
+            const bookingDetailsSection = document.getElementById('bookingDetails');
+            const modalOverlay = document.getElementById('modalOverlay');
+            const meetingForm = document.getElementById('meetingForm');
+            const modalContent = document.getElementById('modalContent');
+
+            async function loadMeetingSchedules() {
+                try {
+                    // Fetch meeting schedules
+                    const schedulesResponse = await axios.get('http://localhost:3000/api/meeting-schedules');
+                    const meetingSchedules = schedulesResponse.data;
+                    renderMeetingSchedules(meetingSchedules);
+
+                    // Fetch existing bookings
+                    const bookingsResponse = await axios.get('http://localhost:3000/api/bookings');
+                    const existingBookings = bookingsResponse.data;
+                    renderExistingBookings(existingBookings);
+                } catch (error) {
+                    console.error('Error fetching meeting schedules and bookings:', error);
+                }
+            }
+
+            function renderMeetingSchedules(schedules) {
+                container.innerHTML = '';
+                schedules.forEach(schedule => {
+                    const scheduleHTML = generateMeetingScheduleHTML(schedule);
+                    container.innerHTML += scheduleHTML;
+                });
+            }
+
+            function renderExistingBookings(bookings) {
+                const bookingList = document.getElementById('bookingList');
+                bookingList.innerHTML = ''; // Clear previous content
+
+                if (bookings.length > 0) {
+                    bookings.forEach(booking => {
+                        const bookingHTML = generateBookingHTML(booking);
+                        bookingList.innerHTML += bookingHTML;
+                    });
+
+                    // Show the booking details section
+                    bookingDetailsSection.style.display = 'block';
+
+                    // Attach event listeners to cancel buttons
+                    const cancelButtons = document.querySelectorAll('.cancel-btn');
+                    cancelButtons.forEach(button => {
+                        button.addEventListener('click', async () => {
+                            const bookingId = button.dataset.bookingId;
+                            try {
+                                // Send request to delete booking by ID
+                                await axios.delete(`http://localhost:3000/api/bookings/${bookingId}`);
+                                // Remove booking HTML from the list
+                                button.parentNode.remove();
+                                loadMeetingSchedules();
+                            } catch (error) {
+                                console.error('Error canceling booking:', error);
+                            }
+                        });
+                    });
+                }
+            }
+
+            function generateBookingHTML(booking) {
+                return `
+                    <div class="booking-item">
+                        <p><strong>Name:</strong> ${booking.name}</p>
+                        <p><strong>Place:</strong> ${booking.place}</p>
+                        <p><strong>Time:</strong> ${booking.time}</p>
+                        <button class="cancel-btn" data-booking-id="${booking.id}">Cancel</button>
+                        <hr>
+                    </div>
+                `;
+            }
+
+            function generateMeetingScheduleHTML(schedule) {
+                return `
+                    <div class="meeting-box" data-time="${schedule.time}" data-slots="${schedule.slots}">
+                        <p>Meeting Time: <span>${schedule.time}</span></p>
+                        <p>Slots Available: <span>${schedule.slots}</span></p>
+                    </div>
+                `;
+            }
+
+            function showModal(time) {
+                modalOverlay.style.display = 'flex';
+                container.style.display = 'none';
+                modalContent.dataset.time = time;
+            }
+
+            container.addEventListener('click', function(event) {
+                const target = event.target;
+                if (target.classList.contains('meeting-box')) {
+                    const time = target.dataset.time;
+                    const slots = parseInt(target.dataset.slots);
+                    
+                    if (slots > 0) {
+                        showModal(time);
+                    } else {
+                        alert('No slots available for this time.');
+                    }
+                }
+            });
+
+            meetingForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                const name = document.getElementById('name').value;
+                const place = document.getElementById('place').value;
+                const time = modalContent.dataset.time;
+
+                try {
+                    const response = await axios.post('http://localhost:3000/api/book-meeting', { name, place, time });
+                    const bookingData = response.data.booking;
+
+                    loadMeetingSchedules();
+
+                    // Append new booking HTML to the list
+                    const bookingHTML = generateBookingHTML(bookingData);
+                    const bookingList = document.getElementById('bookingList');
+                    bookingList.innerHTML += bookingHTML;
+
+                    // Show the booking details section
+                    bookingDetailsSection.style.display = 'block';
+                    modalOverlay.style.display = 'none';
+                    container.style.display = 'flex';
+
+                    // Clear input fields after successful booking
+                    document.getElementById('name').value = '';
+                    document.getElementById('place').value = '';
+                } catch (error) {
+                    console.error('Error booking meeting:', error);
+                }
+            });
+
+            loadMeetingSchedules();
+        });
+    </script>
+</body>
+</html>
