@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cricket Player App</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <h1>Cricket Player Details</h1>
@@ -15,7 +17,6 @@
     <input type="text" name="photoLink" id="photoLink" placeholder="Photo Link"><br>
     <button type="submit">Add Player</button>
   </form>
-
   <hr>
 
   <h2>Search Player</h2>
@@ -23,64 +24,8 @@
   <button onclick="searchPlayer()">Search</button>
 
   <div id="playerDetails"></div>
-
+  
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-  <script>
-    const baseURL = 'http://localhost:3000'; 
-
-    document.getElementById('playerForm').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const formData = new FormData(event.target);
-      const playerData = Object.fromEntries(formData.entries());
-
-      try {
-        const response = await axios.post(`${baseURL}/players`, playerData);
-        event.target.reset(); 
-      } catch (error) {
-        console.error('Error adding player:', error.response.data);
-      }
-    });
-
-    async function searchPlayer() {
-      const playerName = document.getElementById('searchInput').value;
-      
-      try {
-        const response = await axios.get(`${baseURL}/players/name/${playerName}`);
-        const player = response.data;
-        
-        document.getElementById('playerDetails').innerHTML = `
-          <h3>${player.name}</h3>
-          <p>Scores: ${player.scores}</p>
-          <p>Description: ${player.description}</p>
-          <img src="${player.photoLink}" alt="${player.name}" width="200">
-          <button onclick="populateEditForm(${player.id})">Edit</button>
-        `;
-        document.getElementById('searchInput').value=" "
-      } catch (error) {
-        console.error('Player not found:', error.response.data);
-        document.getElementById('playerDetails').innerHTML = '<p>Player not found</p>';
-      }
-    }
-
-    async function populateEditForm(playerId) {
-        try {
-            const response = await axios.get(`${baseURL}/players/id/${playerId}`);
-            const player = response.data;
-
-            document.getElementById('name').value = player.name;
-            document.getElementById('scores').value = player.scores;
-            document.getElementById('description').value = player.description;
-            document.getElementById('photoLink').value = player.photoLink;
-
-            await axios.delete(`${baseURL}/players/${playerId}`);
-            document.getElementById('playerDetails').innerHTML =" "
-        } catch (error) {
-            console.error('Error fetching player data:', error.response.data);
-            alert('Player not found or error fetching data. Please try again.');
-        }
-    }
-
-
-  </script>
+  <script src="scripts.js"></script>
 </body>
 </html>
