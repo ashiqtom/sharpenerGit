@@ -153,27 +153,34 @@ app.delete('/api/bookings/:id', async (req, res) => {
   }
 });
 
+ createMeetingSchedule =async() => {
+  const meetingTimes = [
+    { time: '10:00 AM', slots: 4 },
+    { time: '2:00 PM', slots: 4 },
+    { time: '4:30 PM', slots: 4 },
+    { time: '6:00 PM', slots: 4 }
+  ];
+
+  // Loop through each meeting time and find or create the MeetingSchedule
+  for (const { time, slots } of meetingTimes) {
+    try {
+      await MeetingSchedule.findOrCreate({
+        where: { time },
+        defaults: { slots }
+      });
+    } catch (error) {
+      console.error('Error finding or creating MeetingSchedule:', error);
+    }
+  }  
+}
 
 
-// Sync Sequelize models with the database
 sequelize
   .sync()
-  //.sync({ force: true }) // Use { force: true } to drop tables and re-create them
-  .then(result => {
-    return MeetingSchedule.findByPk(1);
+  .then(()=>{
+    return createMeetingSchedule();
   })
-  .then((name) => {
-    if(!name){
-      return MeetingSchedule.bulkCreate([
-        { time: '10:00 AM', slots: 4 },
-        { time: '2:00 PM', slots: 4 },
-        { time: '4:30 PM', slots: 4 },
-        { time: '6:00 PM', slots: 4 }
-      ])
-    }
-    return name
-  })
-  .then(() => {
+  .then(()=>{
     app.listen(port, () => {
       console.log(`Server running on port ${port}`);
     });
@@ -181,3 +188,6 @@ sequelize
   .catch(err => {
     console.error('Database sync error:', err);
   });
+
+
+
