@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Error:', error);
-            if (error.response && error.response.status === 401) {
+            if (error.response && error.response.status === 404) {
                 message.textContent = 'Invalid email or password. Please try again.';
             } else {
                 message.textContent = 'An error occurred. Please try again.';

@@ -24,11 +24,11 @@ exports.getlogin = async (req, res) => {
         const existingUser = await User.findOne({ where: { email } });
         
         if (!existingUser) {
-            return res.status(401).json({ message: 'Invalid email or password' });
+            return res.status(404).json({ message: 'Invalid email or password' });
         }
         const existingPassword = existingUser.password; 
         if (existingPassword !== password) {
-            return res.status(401).json({ message: 'Invalid email or password' });
+            return res.status(404).json({ message: 'Invalid email or password' });
         }
         return res.status(200).json({ message: 'Login successful' });
         
