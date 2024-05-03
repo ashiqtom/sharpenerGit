@@ -5,4 +5,6 @@ const adminController = require('../controllers/admin');
 
 router.post('/signup', adminController.postUser);
 
+router.get('/login/:email/:password',adminController.getlogin)
+
 module.exports = router;
