@@ -6,19 +6,14 @@ exports.postUser=async (req, res) => {
     try {
         const { username, email, password } = req.body;
 
-        
-
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
             return res.status(400).json({ error: 'Email already exists' });
         }
-        bcrypt.hash(password,10,async(err,hash)=>{
-            console.log(err);
-            const newUser = await User.create({ username, email, password:hash});
-            res.status(201).json(newUser);
-        })
+        const hashedPassword = await bcrypt.hash(password,10)
+        const newUser = await User.create({ username, email, password:hashedPassword});
+        res.status(201).json(newUser);
 
-        
     } catch (error) {
         console.error('Error signing up:', error);
         res.status(500).json({ error: 'Internal server error' });
