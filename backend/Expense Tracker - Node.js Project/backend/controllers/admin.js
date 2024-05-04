@@ -1,12 +1,13 @@
 
 const User = require('../models/user');
 const bcrypt=require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 const Expense = require('../models/expense');
 
 exports.getExpence=async (req, res) => {
     try {
-      const expenses = await Expense.findAll();
+      const expenses = await Expense.findAll({where:{UserId:req.user.id}});
       res.status(200).json(expenses);
     } catch (err) {
       console.error('Error fetching expenses:', err);
@@ -17,23 +18,20 @@ exports.getExpence=async (req, res) => {
 exports.postExpence=async (req, res) => {
     const { amount, description, category } = req.body;
     try {
-        const expense = await Expense.create({ amount, description, category });
+        console.log(req.user.id,'````````````````')
+        const expense = await Expense.create({ amount, description, category,UserId:req.user.id});
         res.status(201).json(expense);
     } catch (err) {
         console.error('Error creating expense:', err);
         res.status(500).json({ error: 'Failed to create expense' });
     }
-}
+  }
 
 exports.deleteExpence=async (req, res) => {
     const expenseId = req.params.expenseId;
     try {
-      const expense = await Expense.findByPk(expenseId);
-      if (!expense) {
-        return res.status(404).json({ error: 'Expense not found' });
-      }
-      await expense.destroy();
-      res.status(204).end();
+        const expense = await Expense.destroy({where: { id: expenseId, UserId:req.user.id }});
+        res.status(204).end();
     } catch (err) {
       console.error('Error deleting expense:', err);
       res.status(500).json({ error: 'Internal Server Error' });
@@ -61,7 +59,7 @@ exports.postUser=async (req, res) => {
 }
 exports.getlogin = async (req, res) => {
     try {
-        const { email, password } = req.params; 
+        const { email, password} = req.params; 
         const existingUser = await User.findOne({ where: { email } });
         
         if (!existingUser) {
@@ -72,8 +70,7 @@ exports.getlogin = async (req, res) => {
         const passwordCompared=await bcrypt.compare(password,existingPassword);
 
         if(passwordCompared){
-            //return res.redirect('file:///C:/Users/aannto/Desktop/work/git/backend/Expense%20Tracker%20-%20Node.js%20Project/frontet/expense.html');
-            return res.status(200).json({ message: 'Login successful' });
+            return res.status(200).json({ message: 'Login successful' ,token: generateAccessToken(existingUser.id,existingUser.username)});
         }else{
             return res.status(401).json({ message: 'Invalid password' });
         }
@@ -82,3 +79,8 @@ exports.getlogin = async (req, res) => {
         return res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+
+function generateAccessToken(id,name){
+    return jwt.sign({userId:id,name:name},'22222222222222233333333333333333333')
+}

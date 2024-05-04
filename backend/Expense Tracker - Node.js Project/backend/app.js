@@ -6,6 +6,11 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors()); 
 
+const User = require('./models/user');
+const Expense = require('./models/expense');
+User.hasMany(Expense);
+Expense.belongsTo(User);
+
 
 const sequelize = require('./util/database');
 const adminRoutes = require('./routes/user');

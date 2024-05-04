@@ -13,7 +13,10 @@ async function handleFormSubmit(event) {
     category: category
   };
   try {
-    const response = await axios.post(baseUrl, expenseObj);
+    
+    const token = localStorage.getItem('token');
+    
+    const response = await axios.post(baseUrl, expenseObj,{headers:{"authorization":token}});
     displayExpenseOnScreen(response.data);
     event.target.reset();
   } catch (error) {
@@ -30,7 +33,8 @@ async function displayExpenseOnScreen(expenseDetails) {
   deleteButton.textContent = 'Delete';
   deleteButton.onclick = async () => {
     try {
-      await axios.delete(`${baseUrl}/${expenseDetails.id}`);
+      const token = localStorage.getItem('token');
+      await axios.delete(`${baseUrl}/${expenseDetails.id}`,{headers:{"authorization":token}});
       /*How Closures Work Here:
         The key aspect of this implementation is the use of a closure within the 
         deleteButton.onclick event handler function:
@@ -75,7 +79,8 @@ async function displayExpenseOnScreen(expenseDetails) {
 
 document.addEventListener('DOMContentLoaded', async ()=> {
   try {
-    const response = await axios.get(baseUrl);
+    const token = localStorage.getItem('token');
+    const response = await axios.get(baseUrl,{headers:{"authorization":token}});
     response.data.forEach(expense => {
       displayExpenseOnScreen(expense);
     });
