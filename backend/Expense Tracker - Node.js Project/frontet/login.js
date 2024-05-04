@@ -1,4 +1,4 @@
-const baseURL = 'http://localhost:3000/user'; 
+const baseURL = 'http://localhost:3000'; 
 
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('loginForm');
@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
             if (response.status === 200 && response.data.message === 'Login successful') {
                 message.textContent = 'Login successful!';
+                window.location.href = 'file:///C:/Users/aannto/Desktop/work/git/backend/Expense%20Tracker%20-%20Node.js%20Project/frontet/expense.html';
             } else {
                 message.textContent = response.data.message || 'Login failed. Please check your credentials.';
             }

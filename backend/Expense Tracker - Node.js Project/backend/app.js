@@ -10,7 +10,7 @@ app.use(cors());
 const sequelize = require('./util/database');
 const adminRoutes = require('./routes/user');
 
-app.use('/user',adminRoutes);
+app.use('/',adminRoutes);
 
 
 sequelize

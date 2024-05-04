@@ -1,4 +1,4 @@
-const baseURL = 'http://localhost:3000/user'; 
+const baseURL = 'http://localhost:3000'; 
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('signupForm');
     const message = document.getElementById('message');
