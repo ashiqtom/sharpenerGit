@@ -2,17 +2,11 @@ const express = require('express');
 
 const router = express.Router();
 
-const adminController = require('../controllers/admin');
-const userAuthentication =require('../middleware/auth')
+const userController = require('../controllers/user');
 
-router.post('/signup', adminController.postUser);
+router.post('/signup', userController.postUser);
 
-router.get('/login/:email/:password',adminController.getlogin)
-  
-router.get('/expenses', userAuthentication.authenticate ,adminController.getExpence);
-
-router.post('/expenses', userAuthentication.authenticate ,adminController.postExpence);  
-  
-router.delete('/expenses/:expenseId', userAuthentication.authenticate ,adminController.deleteExpence );
+router.get('/login/:email/:password',userController.getlogin)
 
 module.exports = router;
+ 

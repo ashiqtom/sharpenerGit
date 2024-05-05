@@ -1,4 +1,4 @@
-const baseURL = 'http://localhost:3000'; 
+const baseURL = 'http://localhost:3000/user'; 
 
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('loginForm');
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (response.status === 200 && response.data.message === 'Login successful') {
                 message.textContent = 'Login successful!';
                 localStorage.setItem('token',response.data.token)
-                window.location.href = 'expense.html';
+                window.location.href = '../expense/expense.html';
             } else {
                 message.textContent = response.data.message || 'Login failed. Please check your credentials.';
             }
