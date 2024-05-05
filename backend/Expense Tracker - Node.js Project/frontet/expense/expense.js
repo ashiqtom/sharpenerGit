@@ -37,16 +37,7 @@ async function displayExpenseOnScreen(expenseDetails) {
       await axios.delete(`${baseUrl}/${expenseDetails.id}`,{headers:{"authorization":token}});
       /*How Closures Work Here:
         The key aspect of this implementation is the use of a closure within the 
-        deleteButton.onclick event handler function:
-        
-        deleteButton.onclick = async () => {
-          try {
-            await axios.delete(`${baseUrl}/${expenseDetails.id}`);
-            parentElem.removeChild(listItem);
-          } catch (error) {
-            console.error('Delete failed:', error);
-          }
-        };
+        deleteButton.onclick event handler function.
         The arrow function assigned to deleteButton.onclick captures and retains access 
         to the expenseDetails object from the outer scope of displayExpenseOnScreen.
         This means that when the delete button is clicked, the event handler 
@@ -57,27 +48,11 @@ async function displayExpenseOnScreen(expenseDetails) {
       console.error('Delete failed:', error);
     }
   };
-
-  // const editButton = document.createElement('button');
-  // editButton.textContent = 'Edit';
-  // editButton.onclick = async()=>{
-  //   try {
-  //     document.getElementById("amount").value = expenseDetails.amount;
-  //     document.getElementById("description").value = expenseDetails.description;
-  //     document.getElementById("category").value = expenseDetails.category;
-  //     await axios.delete(`${baseUrl}/${expenseDetails.id}`);
-  //     parentElem.removeChild(listItem);
-  //   } catch (error) {
-  //       console.log(error);
-  //   }
-  // }
-
   listItem.appendChild(deleteButton);
-  //listItem.appendChild(editButton);
   parentElem.appendChild(listItem);
 }
 
-document.addEventListener('DOMContentLoaded', async ()=> {
+window.addEventListener('DOMContentLoaded', async ()=> {
   try {
     const token = localStorage.getItem('token');
     const response = await axios.get(`${baseUrl}/get`,{headers:{"authorization":token}});

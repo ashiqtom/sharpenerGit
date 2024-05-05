@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 exports.authenticate=async(req,res,next)=>{
     try{
         const token=req.header('authorization');
-        const user=jwt.verify(token,'22222222222222233333333333333333333');
+        const user=jwt.verify(token,'secretkey');
         
         const userDetails=await User.findByPk(user.userId)
         req.user=userDetails;

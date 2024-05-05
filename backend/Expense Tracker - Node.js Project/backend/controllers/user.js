@@ -1,4 +1,3 @@
-
 const User = require('../models/user');
 const bcrypt=require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -11,16 +10,17 @@ exports.postUser=async (req, res) => {
         const existingUser = await User.findOne({ where: { email } });
 
         if (existingUser) {
-            return res.status(400).json({ error: 'Email already exists' });
+            return res.status(400).json({ err: 'Email already exists' });
         }
-        const hashedPassword = await bcrypt.hash(password,10);
+        const saltrounds = 10;
+        const hashedPassword = await bcrypt.hash(password,saltrounds);
 
         const newUser = await User.create({ username, email, password:hashedPassword});
-        res.status(201).json(newUser);
+        res.status(201).json({message: 'Successfuly create new user'});
 
-    } catch (error) {
-        console.error('Error signing up:', error);
-        res.status(500).json({ error: 'Internal server error' });
+    } catch (err) {
+        console.error('Error signing up:', err);
+        res.status(500).json({ err: 'Internal server error' });
     }
 }
 exports.getlogin = async (req, res) => {
@@ -29,24 +29,24 @@ exports.getlogin = async (req, res) => {
         const existingUser = await User.findOne({ where: { email } });
         
         if (!existingUser) {
-            return res.status(404).json({ message: 'Invalid email' });
+            return res.status(404).json({ err: 'Invalid email' });
         }
         const existingPassword = existingUser.password;
         
         const passwordCompared=await bcrypt.compare(password,existingPassword);
 
         if(passwordCompared){
-            return res.status(200).json({ message: 'Login successful' ,token: generateAccessToken(existingUser.id,existingUser.username)});
+            return res.status(200).json({ success: true, message: "User logged in successfully",token: generateAccessToken(existingUser.id,existingUser.username)});
         }else{
-            return res.status(401).json({ message: 'Invalid password' });
+            return res.status(400).json({success: false, err: 'Password is incorrect'});
         }
-    } catch (error) {
-        console.error('Error login:', error);
-        return res.status(500).json({ message: 'Internal server error' });
+    } catch (err) {
+        console.error('Error login:', err);
+        return res.status(500).json({err: err, success: false});
     }
 };
 
 
-function generateAccessToken(id,name){
-    return jwt.sign({userId:id,name:name},'22222222222222233333333333333333333')
+const generateAccessToken=(id,name)=>{
+    return jwt.sign({userId:id,name:name},'secretkey')
 }
