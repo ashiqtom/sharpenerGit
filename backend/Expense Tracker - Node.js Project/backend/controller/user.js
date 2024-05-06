@@ -13,9 +13,9 @@ exports.postUser=async (req, res) => {
             return res.status(400).json({ err: 'Email already exists' });
         }
         const saltrounds = 10;
-        const hashedPassword = await bcrypt.hash(password,saltrounds);
+        const hashedPassword = await bcrypt.hash(password,saltrounds); 
 
-        const newUser = await User.create({ username, email, password:hashedPassword});
+        await User.create({ username, email, password:hashedPassword});
         res.status(201).json({message: 'Successfuly create new user'});
 
     } catch (err) {
@@ -31,9 +31,7 @@ exports.getlogin = async (req, res) => {
         if (!existingUser) {
             return res.status(404).json({ err: 'Invalid email' });
         }
-        const existingPassword = existingUser.password;
-        
-        const passwordCompared=await bcrypt.compare(password,existingPassword);
+        const passwordCompared=await bcrypt.compare(password,existingUser.password);
 
         if(passwordCompared){
             return res.status(200).json({ success: true, message: "User logged in successfully",token: generateAccessToken(existingUser.id,existingUser.username)});
@@ -46,7 +44,6 @@ exports.getlogin = async (req, res) => {
     }
 };
 
-
 const generateAccessToken=(id,name)=>{
     return jwt.sign({userId:id,name:name},'secretkey')
-}
+};

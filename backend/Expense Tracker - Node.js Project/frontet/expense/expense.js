@@ -1,3 +1,4 @@
+
 const baseUrl = 'http://localhost:3000/expenses';
 
 async function handleFormSubmit(event) {
@@ -10,12 +11,12 @@ async function handleFormSubmit(event) {
   const expenseObj = {
     amount: amount,
     description: description,
-    category: category
+    category: category 
   };
   try {
     
     const token = localStorage.getItem('token');
-    
+    console.log(token)
     const response = await axios.post(`${baseUrl}/post`, expenseObj,{headers:{"authorization":token}});
     displayExpenseOnScreen(response.data);
     event.target.reset();
@@ -52,6 +53,53 @@ async function displayExpenseOnScreen(expenseDetails) {
   parentElem.appendChild(listItem);
 }
 
+document.getElementById('rzp-button1').onclick = async function (e) {
+  const token = localStorage.getItem('token');
+  try {
+    const response = await axios.get('http://localhost:3000/purchase/premiummembership', { headers: { "Authorization": token } });
+
+    var options = {
+      "key": response.data.key_id,
+      "order_id": response.data.order.id,
+      "handler": async function (response) {
+        try {
+          await axios.post('http://localhost:3000/purchase/updatetransactionstatus', {
+            order_id: options.order_id,
+            payment_id: response.razorpay_payment_id,
+          }, { headers: { "Authorization": token } });
+          document.getElementById('rzp-button1').style.display = 'none';
+          document.getElementById('successMessage').style.display = 'block';
+          document.getElementById('successMessage').innerHTML = 'You are a Premium User Now';
+          alert('You are a Premium User Now');
+        } catch (error) {
+          console.error('Error updating transaction status:', error);
+        }
+      },
+    };
+
+    const rzp1 = new Razorpay(options);
+    rzp1.open();
+    e.preventDefault();
+
+    rzp1.on('payment.failed', async function (response) {
+      try {
+        console.log(response);
+        await axios.post('http://localhost:3000/purchase/updateorderstatus', {
+          order_id: options.order_id,
+        }, { headers: { "Authorization": token } });
+        alert('Payment failed. Your order status has been updated.');
+      } catch (error) {
+        console.error('Error updating order status:', error);
+        alert('Payment failed. Please contact support.');
+      }
+    });
+  } catch (error) {
+    console.error('Error initiating premium membership purchase:', error);
+    alert('Failed to initiate premium membership purchase. Please try again.');
+  }
+};
+
+
 window.addEventListener('DOMContentLoaded', async ()=> {
   try {
     const token = localStorage.getItem('token');
@@ -61,5 +109,5 @@ window.addEventListener('DOMContentLoaded', async ()=> {
     });
   } catch (error) {
     console.error('Failed to load expenses:', error);
-  }
+  } 
 });
