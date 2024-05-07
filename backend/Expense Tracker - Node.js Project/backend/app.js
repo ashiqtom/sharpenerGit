@@ -19,11 +19,13 @@ Order.belongsTo(User);
 
 const adminRoutes = require('./routes/user');
 const expenseRoutes = require('./routes/expense');
-const purchaseRoutes = require('./routes/purchase')
+const purchaseRoutes = require('./routes/purchase');
+const premiumRoutes=require('./routes/premium');
 
 app.use('/user',adminRoutes);
 app.use('/expenses',expenseRoutes);
-app.use('/purchase', purchaseRoutes)
+app.use('/purchase', purchaseRoutes);
+app.use('/premium',premiumRoutes);
 
 sequelize
   .sync()

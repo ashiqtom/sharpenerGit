@@ -116,9 +116,40 @@ document.getElementById('rzp-button1').onclick = async function (e) {
 
 function displayPremiumStatus(isPremium) {
   if(isPremium===true){
+    const premiumTag=document.getElementById('successMessage');
     document.getElementById('rzp-button1').style.display = 'none';
-    document.getElementById('successMessage').innerHTML='You are a Premium User';
+    premiumTag.innerHTML='You are a Premium User';
+
+    const lbButton = document.createElement('button');
+    lbButton.textContent = 'Leader Board';
+    lbButton.onclick = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:3000/premium/leaderBoard', { headers: { "Authorization": token } });
+        
+        console.log(response.data)
+
+        const lbHeading = document.getElementById('lbHeading');
+
+        const lbList = document.getElementById('lbList');
+
+        lbList.innerHTML = '';
+
+        response.data.userLeaderBoardDetails.forEach(user => {
+          const listItem = document.createElement('li');
+          listItem.textContent = `${user.name}: ${user.totalCost}`;
+          lbList.appendChild(listItem);
+        });
+        lbHeading.style.display = 'block';
+
+      } catch (error) {
+        console.error('leader board failed:', error);
+      }
+    };
+    premiumTag.appendChild(lbButton)
   }else{
     document.getElementById('successMessage').innerHTML = 'You are not a Premium User';
+    lbHeading.style.display = 'none';
+    lbList.innerHTML = '';
   }
 }
