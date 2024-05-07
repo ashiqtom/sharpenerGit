@@ -5,7 +5,7 @@ const Order = require('../models/order')
 exports.getTransactionStatus = async (req, res ) => {
     try {
         const isPremiumUser = req.user.ispremiumuser;
-        res.status(200).json({ isPremiumUser });
+        res.status(200).json({ status:isPremiumUser });
     } catch (err) {
         console.error('Error in getTransactionStatus:', err)                                                                                                         
         res.status(500).json({ errpr: err, message: 'Sometghing went wrong' })
@@ -45,24 +45,24 @@ exports.updateOrderStatus = async (req, res) => {
       res.status(500).json({ error: err, message: 'Failed to update order status.' });
     }
   };
-  
 
-exports.updateTransactionStatus = async (req, res ) => {
+exports.updateTransactionStatus = async (req, res) => {
     try {
-        const { payment_id, order_id} = req.body;
-        const order  = await Order.findOne({where : {orderid : order_id}});
-        const promise1 = await order.update({ paymentid: payment_id, status: 'SUCCESSFUL'}) 
-        const promise2 = await req.user.update({ ispremiumuser: true }) 
+        const { payment_id, order_id } = req.body;
 
-        Promise.all([promise1,promise2])
-            .then(()=>{
-                res.status(202).json({sucess: true, message: "Transaction Successful"});
-            })
-            .catch((err)=>{
-               console.log(err)
-            })     
+        const order = await Order.findOne({ where: { orderid: order_id } });
+        if (!order) {
+            return res.status(404).json({ success: false, message: "Order not found" });
+        }
+
+        const updateOrderPromise = order.update({ paymentid: payment_id, status: 'SUCCESSFUL' });
+        const updateUserPromise = req.user.update({ ispremiumuser: true });
+
+        await Promise.all([updateOrderPromise, updateUserPromise]);
+
+        res.status(202).json({ success: true, message: "Transaction Successful" });
     } catch (err) {
-        console.error('Error in updateTransactionStatus:', err)                                                                                                         
-        res.status(500).json({ errpr: err, message: 'Sometghing went wrong' })
+        console.error('Error in updateTransactionStatus:', err);
+        res.status(500).json({ error: err.message || "Something went wrong" });
     }
-}
+};

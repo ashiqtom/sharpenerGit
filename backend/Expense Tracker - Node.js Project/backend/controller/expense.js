@@ -13,7 +13,6 @@ exports.getExpence=async (req, res) => {
 exports.postExpence=async (req, res) => {
     const { amount, description, category } = req.body;
     try {
-        console.log(req.user.id,'````````````````')
         const expense = await Expense.create({ amount, description, category,UserId:req.user.id});
         res.status(201).json(expense);
     } catch (err) {

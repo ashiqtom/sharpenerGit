@@ -3,7 +3,7 @@ const bcrypt=require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 
-exports.postUser=async (req, res) => {
+exports.signupUser=async (req, res) => {
     try {
         const { username, email, password } = req.body;
 
@@ -13,7 +13,7 @@ exports.postUser=async (req, res) => {
             return res.status(400).json({ err: 'Email already exists' });
         }
         const saltrounds = 10;
-        const hashedPassword = await bcrypt.hash(password,saltrounds); 
+        const hashedPassword = await bcrypt.hash(password,saltrounds); //blowfish 
 
         await User.create({ username, email, password:hashedPassword});
         res.status(201).json({message: 'Successfuly create new user'});
@@ -23,7 +23,7 @@ exports.postUser=async (req, res) => {
         res.status(500).json({ err: 'Internal server error' });
     }
 }
-exports.getlogin = async (req, res) => {
+exports.loginUser = async (req, res) => {
     try {
         const { email, password} = req.params; 
         const existingUser = await User.findOne({ where: { email } });
