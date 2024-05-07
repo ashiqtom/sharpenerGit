@@ -1,3 +1,4 @@
+const { where } = require('sequelize');
 const Expense = require('../models/expense');
 
 exports.getExpence=async (req, res) => {
@@ -14,6 +15,12 @@ exports.postExpence=async (req, res) => {
     const { amount, description, category } = req.body;
     try {
         const expense = await Expense.create({ amount, description, category,UserId:req.user.id});
+        if(req.user.totalExpense===null){
+          req.user.update({ totalExpense:amount });
+        }else{
+          const expense=req.user.totalExpense+ parseInt(amount);
+          req.user.update({ totalExpense:expense });
+        }
         res.status(201).json(expense);
     } catch (err) {
         console.error('Error creating expense:', err);
@@ -24,7 +31,12 @@ exports.postExpence=async (req, res) => {
 exports.deleteExpence=async (req, res) => {
     const expenseId = req.params.expenseId;
     try {
-        const expense = await Expense.destroy({where: { id: expenseId, UserId:req.user.id }});
+      const curentExpense=await Expense.findOne({where:{id: expenseId, UserId:req.user.id}})
+        await Expense.destroy({where: { id: expenseId, UserId:req.user.id }});
+        if(curentExpense.amount>0){
+          const expense=req.user.totalExpense - curentExpense.amount;
+          req.user.update({ totalExpense:expense });
+        }
         res.status(204).end();
     } catch (err) {
       console.error('Error deleting expense:', err);

@@ -126,7 +126,7 @@ function displayPremiumStatus(isPremium) {
       try {
         const token = localStorage.getItem('token');
         const response = await axios.get('http://localhost:3000/premium/leaderBoard', { headers: { "Authorization": token } });
-        
+        console.log(response.data,'!!!!!!!!!!!!!!!!')
         const lbHeading = document.getElementById('lbHeading');
 
         const lbList = document.getElementById('lbList');
@@ -135,7 +135,7 @@ function displayPremiumStatus(isPremium) {
 
         response.data.forEach(user => {
           const listItem = document.createElement('li');
-          listItem.textContent = `${user.username}: ${user.totalCost}`;
+          listItem.textContent = `${user.username}: ${user.totalExpense}`;
           lbList.appendChild(listItem);
         });
         lbHeading.style.display = 'block';
