@@ -1,6 +1,18 @@
 const Razorpay = require('razorpay');
 const Order = require('../models/order')
 
+
+exports.getTransactionStatus = async (req, res ) => {
+    try {
+        const isPremiumUser = req.user.ispremiumuser;
+        res.status(200).json({ isPremiumUser });
+    } catch (err) {
+        console.error('Error in getTransactionStatus:', err)                                                                                                         
+        res.status(500).json({ errpr: err, message: 'Sometghing went wrong' })
+    }
+}
+
+
 exports.purchasepremium = async (req, res) => {
     try {
         const rzp = new Razorpay({
@@ -9,6 +21,7 @@ exports.purchasepremium = async (req, res) => {
         });
 
         const amount = 2500; 
+        
         const order = await rzp.orders.create({ amount, currency: "INR" });
 
         await req.user.createOrder({ orderid: order.id, status: 'PENDING'});
@@ -38,10 +51,16 @@ exports.updateTransactionStatus = async (req, res ) => {
     try {
         const { payment_id, order_id} = req.body;
         const order  = await Order.findOne({where : {orderid : order_id}});
-        await order.update({ paymentid: payment_id, status: 'SUCCESSFUL'}) 
-        await req.user.update({ ispremiumuser: true }) 
+        const promise1 = await order.update({ paymentid: payment_id, status: 'SUCCESSFUL'}) 
+        const promise2 = await req.user.update({ ispremiumuser: true }) 
 
-        res.status(202).json({sucess: true, message: "Transaction Successful"});     
+        Promise.all([promise1,promise2])
+            .then(()=>{
+                res.status(202).json({sucess: true, message: "Transaction Successful"});
+            })
+            .catch((err)=>{
+               console.log(err)
+            })     
     } catch (err) {
         console.error('Error in updateTransactionStatus:', err)                                                                                                         
         res.status(500).json({ errpr: err, message: 'Sometghing went wrong' })

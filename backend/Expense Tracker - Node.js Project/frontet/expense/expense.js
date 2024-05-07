@@ -1,5 +1,5 @@
 
-const baseUrl = 'http://localhost:3000/expenses';
+const baseUrl = 'http://localhost:3000';
 
 async function handleFormSubmit(event) {
   event.preventDefault();
@@ -17,7 +17,7 @@ async function handleFormSubmit(event) {
     
     const token = localStorage.getItem('token');
     console.log(token)
-    const response = await axios.post(`${baseUrl}/post`, expenseObj,{headers:{"authorization":token}});
+    const response = await axios.post(`${baseUrl}/expenses/post`, expenseObj,{headers:{"authorization":token}});
     displayExpenseOnScreen(response.data);
     event.target.reset();
   } catch (error) {
@@ -35,7 +35,7 @@ async function displayExpenseOnScreen(expenseDetails) {
   deleteButton.onclick = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`${baseUrl}/${expenseDetails.id}`,{headers:{"authorization":token}});
+      await axios.delete(`${baseUrl}/expenses/${expenseDetails.id}`,{headers:{"authorization":token}});
       /*How Closures Work Here:
         The key aspect of this implementation is the use of a closure within the 
         deleteButton.onclick event handler function.
@@ -74,7 +74,7 @@ document.getElementById('rzp-button1').onclick = async function (e) {
         } catch (error) {
           console.error('Error updating transaction status:', error);
         }
-      },
+      }, 
     };
 
     const rzp1 = new Razorpay(options);
@@ -103,11 +103,25 @@ document.getElementById('rzp-button1').onclick = async function (e) {
 window.addEventListener('DOMContentLoaded', async ()=> {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.get(`${baseUrl}/get`,{headers:{"authorization":token}});
+    const response = await axios.get(`${baseUrl}/expenses/get`,{headers:{"authorization":token}});
+    const premiumStatus=await axios.get(`${baseUrl}/purchase/getStatus`,{headers:{"authorization":token}});
+      
+    displayPremiumStatus(premiumStatus.data);
+
     response.data.forEach(expense => {
       displayExpenseOnScreen(expense);
     });
+    
   } catch (error) {
     console.error('Failed to load expenses:', error);
   } 
 });
+
+function displayPremiumStatus(isPremium) {
+  console.log(isPremium,'>>>>>>>>>>')
+  if(isPremium){
+    document.getElementById('rzp-button1').style.display = 'none';
+  }
+  const premiumStatusElem = document.getElementById('successMessage');
+  premiumStatusElem.innerHTML = isPremium ? 'You are a Premium User' : 'You are not a Premium User';
+}
