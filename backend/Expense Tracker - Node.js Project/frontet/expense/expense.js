@@ -10,10 +10,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     const promise2 = axios.get(`${baseUrl}/purchase/getStatus`, { headers: { "authorization": token } });
    
     const [expensesResponse, premiumStatusResponse] = await Promise.all([promise1, promise2]);
-
     const expenses = expensesResponse.data;
     const premiumStatus = premiumStatusResponse.data.status;
     displayPremiumStatus(premiumStatus);
+    
 
     expenses.forEach(expense => {
       displayExpenseOnScreen(expense);
@@ -39,7 +39,6 @@ async function handleFormSubmit(event) {
   try {
     
     const token = localStorage.getItem('token');
-    console.log(token)
     const response = await axios.post(`${baseUrl}/expenses/post`, expenseObj,{headers:{"authorization":token}});
     displayExpenseOnScreen(response.data);
     event.target.reset();
@@ -126,13 +125,9 @@ function displayPremiumStatus(isPremium) {
       try {
         const token = localStorage.getItem('token');
         const response = await axios.get('http://localhost:3000/premium/leaderBoard', { headers: { "Authorization": token } });
-        console.log(response.data,'!!!!!!!!!!!!!!!!')
         const lbHeading = document.getElementById('lbHeading');
-
         const lbList = document.getElementById('lbList');
-
         lbList.innerHTML = '';
-
         response.data.forEach(user => {
           const listItem = document.createElement('li');
           listItem.textContent = `${user.username}: ${user.totalExpense}`;

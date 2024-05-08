@@ -1,5 +1,5 @@
-const { where } = require('sequelize');
 const Expense = require('../models/expense');
+const sequelize = require('../util/database')
 
 exports.getExpence=async (req, res) => {
     try {
@@ -12,33 +12,37 @@ exports.getExpence=async (req, res) => {
 }
 
 exports.postExpence=async (req, res) => {
+  const t=await sequelize.transaction();
     const { amount, description, category } = req.body;
     try {
-        const expense = await Expense.create({ amount, description, category,UserId:req.user.id});
-        if(req.user.totalExpense===null){
-          req.user.update({ totalExpense:amount });
-        }else{
-          const expense=req.user.totalExpense+ parseInt(amount);
-          req.user.update({ totalExpense:expense });
-        }
+        const expense = await Expense.create({ amount, description, category,UserId:req.user.id},{transaction:t});
+        const totalAmount=req.user.totalExpense+ parseInt(amount);
+        await req.user.update({ totalExpense:totalAmount },{transaction:t});
+        await t.commit()
         res.status(201).json(expense);
     } catch (err) {
-        console.error('Error creating expense:', err);
-        res.status(500).json({ err: 'Failed to create expense' });
+      if (t.finished !== 'commit') {
+          await t.rollback();
+      }
+      console.error('Error creating expense:', err);
+      res.status(500).json({ err: 'Failed to create expense' });
     }
   }
 
 exports.deleteExpence=async (req, res) => {
+  const t=await sequelize.transaction();
     const expenseId = req.params.expenseId;
     try {
-      const curentExpense=await Expense.findOne({where:{id: expenseId, UserId:req.user.id}})
-        await Expense.destroy({where: { id: expenseId, UserId:req.user.id }});
-        if(curentExpense.amount>0){
-          const expense=req.user.totalExpense - curentExpense.amount;
-          req.user.update({ totalExpense:expense });
-        }
-        res.status(204).end();
+      const curentExpense=await Expense.findOne({where:{id: expenseId, UserId:req.user.id}},{transaction:t})
+      await Expense.destroy({where: { id: expenseId, UserId:req.user.id }},{transaction:t});
+      const expense=req.user.totalExpense - curentExpense.amount;
+      await req.user.update({ totalExpense:expense },{transaction:t});
+      await t.commit()
+      res.status(204).end();
     } catch (err) {
+      if (t.finished !== 'commit') {
+          await t.rollback();
+      }
       console.error('Error deleting expense:', err);
       res.status(500).json({ err: 'Internal Server Error' });
     }
