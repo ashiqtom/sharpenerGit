@@ -6,13 +6,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   try {
     const token = localStorage.getItem('token');
 
-    const promise1 = axios.get(`${baseUrl}/expenses/get`, { headers: { "authorization": token } });
-    const promise2 = axios.get(`${baseUrl}/purchase/getStatus`, { headers: { "authorization": token } });
-   
-    const [expensesResponse, premiumStatusResponse] = await Promise.all([promise1, promise2]);
+    const expensesResponse =await axios.get(`${baseUrl}/expenses/get`, { headers: { "authorization": token } });
+
     const expenses = expensesResponse.data;
-    const premiumStatus = premiumStatusResponse.data.status;
-    displayPremiumStatus(premiumStatus);
+
+    displayPremiumStatus();
     
 
     expenses.forEach(expense => {
@@ -41,6 +39,7 @@ async function handleFormSubmit(event) {
     const token = localStorage.getItem('token');
     const response = await axios.post(`${baseUrl}/expenses/post`, expenseObj,{headers:{"authorization":token}});
     displayExpenseOnScreen(response.data);
+    leaderBoardFuction()
     event.target.reset();
   } catch (error) {
     console.error('Expense addition failed:', error);
@@ -59,6 +58,7 @@ async function displayExpenseOnScreen(expenseDetails) {
       const token = localStorage.getItem('token');
       await axios.delete(`${baseUrl}/expenses/${expenseDetails.id}`,{headers:{"authorization":token}});
       parentElem.removeChild(listItem);
+      leaderBoardFuction()
     } catch (error) {
       console.error('Delete failed:', error);
     }
@@ -83,7 +83,7 @@ document.getElementById('rzp-button1').onclick = async function (e) {
             order_id: options.order_id,
             payment_id: response.razorpay_payment_id,
           }, { headers: { "Authorization": token } });
-          displayPremiumStatus(true)
+          displayPremiumStatus()
           alert('You are a Premium User Now');
         } catch (error) {
           console.error('Error updating transaction status:', error);
@@ -112,37 +112,47 @@ document.getElementById('rzp-button1').onclick = async function (e) {
     alert('Failed to initiate premium membership purchase. Please try again.');
   }
 };
-
-function displayPremiumStatus(isPremium) {
-  if(isPremium===true){
+const displayPremiumStatus = async()=> {
+  try{
+    const token = localStorage.getItem('token');
+    const premiumStatusResponse = await axios.get(`${baseUrl}/purchase/getStatus`, { headers: { "authorization": token } });
+    const isPremium = premiumStatusResponse.data.status;
     const premiumTag=document.getElementById('successMessage');
-    document.getElementById('rzp-button1').style.display = 'none';
-    premiumTag.innerHTML='You are a Premium User';
+    const lbHeading = document.getElementById('lbHeading');
 
-    const lbButton = document.createElement('button');
-    lbButton.textContent = 'Leader Board';
-    lbButton.onclick = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:3000/premium/leaderBoard', { headers: { "Authorization": token } });
-        const lbHeading = document.getElementById('lbHeading');
-        const lbList = document.getElementById('lbList');
-        lbList.innerHTML = '';
-        response.data.forEach(user => {
-          const listItem = document.createElement('li');
-          listItem.textContent = `${user.username}: ${user.totalExpense}`;
-          lbList.appendChild(listItem);
-        });
-        lbHeading.style.display = 'block';
+    if(isPremium===true){
+      document.getElementById('rzp-button1').style.display = 'none';
+      premiumTag.innerHTML='You are a Premium User';
+  
+      const lbButton = document.createElement('button');
+      lbButton.textContent = 'Leader Board';
+      lbButton.onclick = () => {
+          leaderBoardFuction();
+      };
+      premiumTag.appendChild(lbButton)
+    }else{
+      document.getElementById('successMessage').innerHTML = 'You are not a Premium User';
+      lbHeading.style.display = 'none';
+      lbList.innerHTML = '';
+    }
+  } catch(err){
+    console.log(err)
+  }
+}
 
-      } catch (error) {
-        console.error('leader board failed:', error);
-      }
-    };
-    premiumTag.appendChild(lbButton)
-  }else{
-    document.getElementById('successMessage').innerHTML = 'You are not a Premium User';
-    lbHeading.style.display = 'none';
+const leaderBoardFuction=async()=>{
+  try{
+    const token = localStorage.getItem('token');
+    const lbList = document.getElementById('lbList');
+    const response = await axios.get('http://localhost:3000/premium/leaderBoard', { headers: { "Authorization": token } });
     lbList.innerHTML = '';
+    response.data.forEach(user => {
+      const listItem = document.createElement('li');
+      listItem.textContent = `Name : ${user.username} - Total expenses : ${user.totalExpense}`;
+      lbList.appendChild(listItem);
+    });
+    lbHeading.style.display = 'block';
+  } catch(err) {
+    console.log(err);
   }
 }

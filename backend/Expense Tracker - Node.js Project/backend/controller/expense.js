@@ -13,26 +13,26 @@ exports.getExpence=async (req, res) => {
 
 exports.postExpence=async (req, res) => {
   const t=await sequelize.transaction();
+  try {
     const { amount, description, category } = req.body;
-    try {
-        const expense = await Expense.create({ amount, description, category,UserId:req.user.id},{transaction:t});
-        const totalAmount=req.user.totalExpense+ parseInt(amount);
-        await req.user.update({ totalExpense:totalAmount },{transaction:t});
-        await t.commit()
-        res.status(201).json(expense);
-    } catch (err) {
-      if (t.finished !== 'commit') {
-          await t.rollback();
-      }
-      console.error('Error creating expense:', err);
-      res.status(500).json({ err: 'Failed to create expense' });
+    const expense = await Expense.create({ amount, description, category,UserId:req.user.id},{transaction:t});
+    const totalAmount=req.user.totalExpense+parseInt(amount);
+    await req.user.update({ totalExpense:totalAmount },{transaction:t});
+    await t.commit()
+    res.status(201).json(expense);
+  } catch (err) {
+    if (t.finished !== 'commit') {
+        await t.rollback();
     }
+    console.error('Error creating expense:', err);
+    res.status(500).json({ err: 'Failed to create expense' });
   }
+}
 
 exports.deleteExpence=async (req, res) => {
   const t=await sequelize.transaction();
-    const expenseId = req.params.expenseId;
     try {
+      const expenseId = req.params.expenseId;
       const curentExpense=await Expense.findOne({where:{id: expenseId, UserId:req.user.id}},{transaction:t})
       await Expense.destroy({where: { id: expenseId, UserId:req.user.id }},{transaction:t});
       const expense=req.user.totalExpense - curentExpense.amount;
