@@ -11,11 +11,14 @@ require('dotenv').config();
 const User = require('./models/user');
 const Expense = require('./models/expense');
 const Order = require('./models/order');
+const ForgotPasswordRequests = require('./models/forgotPasswordRequests');
 
 User.hasMany(Expense);
 Expense.belongsTo(User);
 User.hasMany(Order);
 Order.belongsTo(User);
+User.hasMany(ForgotPasswordRequests);
+ForgotPasswordRequests.belongsTo(User);
 
 const adminRoutes = require('./routes/user');
 const expenseRoutes = require('./routes/expense');
@@ -30,6 +33,7 @@ app.use('/premium',premiumRoutes);
 app.use('/password',forgotRoutes);
 
 sequelize
+  //.sync({ force: true })
   .sync()
   .then(() => {
     app.listen(3000, () => {
