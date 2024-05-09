@@ -128,6 +128,7 @@ const displayPremiumStatus = async()=> {
       lbButton.textContent = 'Leader Board';
       lbButton.onclick = () => {
           leaderBoardFuction();
+          populateTables();
       };
       premiumTag.appendChild(lbButton)
     }else{
@@ -145,6 +146,7 @@ const leaderBoardFuction=async()=>{
     const token = localStorage.getItem('token');
     const lbList = document.getElementById('lbList');
     const response = await axios.get('http://localhost:3000/premium/leaderBoard', { headers: { "Authorization": token } });
+    console.log(response.data)
     lbList.innerHTML = '';
     response.data.forEach(user => {
       const listItem = document.createElement('li');
@@ -155,4 +157,27 @@ const leaderBoardFuction=async()=>{
   } catch(err) {
     console.log(err);
   }
+}
+
+
+
+function populateTables() {
+  const yearlyTable = document.getElementById('yearly-table');
+  const monthlyTable = document.getElementById('monthly-table');
+  const dailyTable = document.getElementById('daily-table');
+
+  yearlyData.forEach(item => {
+      const row = yearlyTable.insertRow();
+      row.innerHTML = `<td>${item.year}</td><td>${item.totalIncome}</td><td>${item.totalExpenses}</td>`;
+  });
+
+  monthlyData.forEach(item => {
+      const row = monthlyTable.insertRow();
+      row.innerHTML = `<td>${item.month}</td><td>${item.totalIncome}</td><td>${item.totalExpenses}</td>`;
+  });
+  
+  dailyData.forEach(item => {
+      const row = dailyTable.insertRow();
+      row.innerHTML = `<td>${item.date}</td><td>${item.income}</td><td>${item.expenses}</td>`;
+  });
 }
