@@ -39,7 +39,6 @@ async function handleFormSubmit(event) {
     const token = localStorage.getItem('token');
     const response = await axios.post(`${baseUrl}/expenses/post`, expenseObj,{headers:{"authorization":token}});
     displayExpenseOnScreen(response.data);
-    leaderBoardFuction()
     event.target.reset();
   } catch (error) {
     console.error('Expense addition failed:', error);
@@ -58,7 +57,6 @@ async function displayExpenseOnScreen(expenseDetails) {
       const token = localStorage.getItem('token');
       await axios.delete(`${baseUrl}/expenses/${expenseDetails.id}`,{headers:{"authorization":token}});
       parentElem.removeChild(listItem);
-      leaderBoardFuction()
     } catch (error) {
       console.error('Delete failed:', error);
     }
@@ -123,12 +121,13 @@ const displayPremiumStatus = async()=> {
     if(isPremium===true){
       document.getElementById('rzp-button1').style.display = 'none';
       premiumTag.innerHTML='You are a Premium User';
-  
+
+      displayDrecoardsOnScreen();
+      
       const lbButton = document.createElement('button');
       lbButton.textContent = 'Leader Board';
       lbButton.onclick = () => {
           leaderBoardFuction();
-          populateTables();
       };
       premiumTag.appendChild(lbButton)
     }else{
@@ -146,7 +145,7 @@ const leaderBoardFuction=async()=>{
     const token = localStorage.getItem('token');
     const lbList = document.getElementById('lbList');
     const response = await axios.get('http://localhost:3000/premium/leaderBoard', { headers: { "Authorization": token } });
-    console.log(response.data)
+    
     lbList.innerHTML = '';
     response.data.forEach(user => {
       const listItem = document.createElement('li');
@@ -156,28 +155,52 @@ const leaderBoardFuction=async()=>{
     lbHeading.style.display = 'block';
   } catch(err) {
     console.log(err);
+    alert(err.response.data.message)
+  }
+}
+
+
+async function download(){
+  try{
+    const token = localStorage.getItem('token');
+    const response=await axios.get('http://localhost:3000/user/download', { headers: {"Authorization" : token} })
+    if(response.status === 201){
+        let a = document.createElement("a");
+        a.href = response.data.Location;
+        a.download = 'myexpense.csv';
+        a.click();
+    }
+    displayDrecoardsOnScreen();
+  }catch(err){
+    console.log(err.response.data.message)
+    alert(err.response.data.message)
+    throw new Error(err)
   }
 }
 
 
 
-function populateTables() {
-  const yearlyTable = document.getElementById('yearly-table');
-  const monthlyTable = document.getElementById('monthly-table');
-  const dailyTable = document.getElementById('daily-table');
+async function displayDrecoardsOnScreen() {
+  try{
+    DRecoardsDiv.style.display = 'block';
+    const token = localStorage.getItem('token');
+    const DRecoard=await axios.get('http://localhost:3000/user/downloadRecoard', { headers: {"Authorization" : token} })
+    document.getElementById('DRecoards').innerHTML="";
+    DRecoard.data.forEach(DRecoards => {
+      const parentElem = document.getElementById('DRecoards');
+      const listItem = document.createElement('li');
+      listItem.textContent = `${DRecoards.downloadedAt}  `;
 
-  yearlyData.forEach(item => {
-      const row = yearlyTable.insertRow();
-      row.innerHTML = `<td>${item.year}</td><td>${item.totalIncome}</td><td>${item.totalExpenses}</td>`;
-  });
+      const downloadLink = document.createElement('a');
+      downloadLink.href = DRecoards.url;
+      downloadLink.textContent = 'Download';
+      downloadLink.download = 'myexpense.csv'; 
 
-  monthlyData.forEach(item => {
-      const row = monthlyTable.insertRow();
-      row.innerHTML = `<td>${item.month}</td><td>${item.totalIncome}</td><td>${item.totalExpenses}</td>`;
-  });
-  
-  dailyData.forEach(item => {
-      const row = dailyTable.insertRow();
-      row.innerHTML = `<td>${item.date}</td><td>${item.income}</td><td>${item.expenses}</td>`;
-  });
+      listItem.appendChild(downloadLink);
+      parentElem.appendChild(listItem);
+    });  
+  } catch(err){
+    console.log(err);
+    alert('err')
+  }
 }

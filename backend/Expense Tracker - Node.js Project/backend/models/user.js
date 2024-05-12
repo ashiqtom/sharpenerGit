@@ -1,6 +1,5 @@
 const Sequelize=require('sequelize');
 const sequelize = require('../util/database');
-const { toDefaultValue } = require('sequelize/lib/utils');
 
 const User = sequelize.define('User', {
     username: {

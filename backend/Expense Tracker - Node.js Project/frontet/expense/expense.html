@@ -28,33 +28,15 @@
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <h3 id="successMessage"></h3>
   <ul id="expenseList"></ul>
-
   <div id="lbHeading" style="display: none;">
     <h3>Leaderboard</h3>
     <ul id="lbList"></ul>
-
-    <div class="table-container">
-        <h3>Yearly Summary</h3>
-        <table id="yearly-table">
-        </table>
-    </div>
-
-    <div class="table-container">
-        <h3>Monthly Summary</h3>
-        <table id="monthly-table">
-        </table>
-    </div>
-
-    <div class="table-container">
-        <h3>Daily Summary</h3>
-        <table id="daily-table">
-        </table>
-    </div>
-
-    <button id="download-btn" >Download Expenses</button>
-    
   </div>
-  
+  <button onclick="download()" id="downloadexpense">Download all expense</button>
+  <div id="DRecoardsDiv" style="display: none;">
+    <h3>Previous download</h3>
+    <ul id="DRecoards"></ul>
+  </div>
 </body>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="expense.js"></script>

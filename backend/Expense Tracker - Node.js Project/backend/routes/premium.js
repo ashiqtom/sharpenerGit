@@ -8,4 +8,4 @@ const router = express.Router();
 
 router.get('/leaderBoard',authenticatemiddleware.authenticate,premiumController.getPremium);
 
-module.exports = router; 
+module.exports = router;  

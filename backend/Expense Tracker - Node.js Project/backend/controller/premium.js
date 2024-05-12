@@ -9,9 +9,9 @@ exports.getPremium = async (req, res) => {
           order:[["totalExpense",'DESC']]
         })
         res.status(200).json(aggExp)
-      }// else{
-      //   return res.status(404).json({ success: false, message: "You are not prime user" });
-      // }
+      }else{
+         res.status(401).json({ success: false, message: "Unauthorized : you are not a premium user" });
+      }
     } catch (err) {
         console.error('Error fetching:', err);
         res.status(500).json({ error: 'Failed to fetch' });
