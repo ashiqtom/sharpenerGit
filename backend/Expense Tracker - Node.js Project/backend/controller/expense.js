@@ -1,10 +1,30 @@
 const Expense = require('../models/expense');
 const sequelize = require('../util/database')
 
+
+
 exports.getExpence=async (req, res) => {
     try {
-      const expenses = await Expense.findAll({where:{UserId:req.user.id}});
-      res.status(200).json(expenses);
+      const page= +req.query.page || 1;
+      
+      let totalaItems=await Expense.count({
+        where: { UserId: req.user.id }
+      });
+      const itemsPerPage=2;
+      const expenses = await Expense.findAll({
+        where:{UserId:req.user.id},
+        offset:(page-1)*itemsPerPage,
+        limit:itemsPerPage,
+      });
+      res.status(200).json({
+        expenses:expenses,
+        currentPage:page,
+        HasNextPage:itemsPerPage*page<totalaItems,
+        nextPage:page+1,
+        hasPreviousPage:page>1,
+        previousPage:page-1,
+        lastPage:Math.ceil(totalaItems/itemsPerPage),
+      });
     } catch (err) { 
       console.error('Error fetching expenses:', err);
       res.status(500).json({ err: 'Failed to fetch expenses' });

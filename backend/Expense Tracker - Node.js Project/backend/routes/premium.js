@@ -1,11 +1,15 @@
 const express = require('express');
 
+const router = express.Router();
+
 const premiumController = require('../controller/premium');
 
 const authenticatemiddleware = require('../middleware/auth');
 
-const router = express.Router();
-
 router.get('/leaderBoard',authenticatemiddleware.authenticate,premiumController.getPremium);
 
-module.exports = router;  
+router.get('/download',authenticatemiddleware.authenticate,premiumController.download);
+
+router.get('/downloadRecoard',authenticatemiddleware.authenticate,premiumController.downloadRecoard);
+
+module.exports = router;

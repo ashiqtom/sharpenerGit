@@ -1,49 +1,6 @@
 const User = require('../models/user');
 const bcrypt=require('bcrypt');
 const jwt = require('jsonwebtoken');
-const UserServices=require('../services/userservices');
-const S3Services=require('../services/S3services');
-const FileDownloaded=require('../models/filesDownloaded');
-
-
-exports.downloadRecoard=async (req, res) => { 
-    try {
-      const isPremiumUser = req.user.ispremiumuser;
-      if(isPremiumUser){
-        const downloadRecoard=await FileDownloaded.findAll({ where : { UserId : req.user.id }})
-        res.status(201).json(downloadRecoard)
-      }else{
-        res.status(401).json({ success: false, message: "Unauthorized : you are not a premium user" });
-      }
-    } catch (err) {
-        console.error('Error fetching:', err);
-        res.status(500).json({ error: 'Failed to fetch' ,err:err});
-    }
-};
-  
-
-exports.download=async (req, res) => { 
-    try {
-      const isPremiumUser = req.user.ispremiumuser;
-      if(isPremiumUser){
-        const expense=await UserServices.getExpenses(req);
-        const stringifiedExpenses = JSON.stringify(expense);
-
-        const filename=`Expense${req.user.id}/${new Date()}.txt`;
-        const fileUrl=await S3Services.uploadToS3(stringifiedExpenses,filename);
-
-        await FileDownloaded.create({url:fileUrl.Location,UserId:req.user.id})
-        
-        res.status(201).json(fileUrl )
-      }else{
-        res.status(401).json({ success: false, message: "Unauthorized : you are not a premium user" });
-      }
-    } catch (err) {
-        console.error('Error fetching:', err);
-        res.status(500).json({ error: 'Failed to fetch' ,err:err});
-    }
-};
-  
 
 exports.signupUser=async (req, res) => {
     try {
