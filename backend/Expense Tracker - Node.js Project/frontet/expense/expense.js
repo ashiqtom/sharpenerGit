@@ -30,10 +30,16 @@ const showpagination=async(data)=>{
     }
 }
 
-const getExpenses=async(page)=>{
+const getExpenses=async(page=1)=>{
   try{
+    const itemsPerPage = localStorage.getItem('itemsPerPage');
     const token = localStorage.getItem('token');
-    const expensesResponse = await axios.get(`${baseUrl}/expenses/get?page=${page}`, { headers: { "authorization": token } });
+    const expensesResponse = await axios.get(`${baseUrl}/expenses/get`, {
+       params: { 
+          page: page,
+          itemsPerPage: itemsPerPage }, 
+      headers: { "authorization": token },
+    });
     
     showpagination(expensesResponse.data);
     displayExpenseOnScreen(expensesResponse.data.expenses);
@@ -45,9 +51,16 @@ const getExpenses=async(page)=>{
 
 window.addEventListener('DOMContentLoaded', async () => {
   try {
+    const paginationNums = document.getElementById('paginationNums');
+    const itemsPerPage = localStorage.getItem('itemsPerPage');
+    paginationNums.value = itemsPerPage || '2';
+    paginationNums.addEventListener('change',async function() {
+        const selectedValue = paginationNums.value;
+        localStorage.setItem('itemsPerPage', selectedValue);
+        await getExpenses()
+      })
     displayPremiumStatus();
-    const page=1;
-    await getExpenses(page)
+    await getExpenses()
   } catch (error) {
     console.error('Failed to load expenses or premium status:', error);
   }
@@ -225,7 +238,7 @@ async function displayDrecoardsOnScreen() {
     const token = localStorage.getItem('token');
     const DRecoard=await axios.get('http://localhost:3000/premium/downloadRecoard', { headers: {"Authorization" : token} })
     document.getElementById('DRecoards').innerHTML="";
-    
+
     DRecoard.data.forEach(DRecoards => {
       const parentElem = document.getElementById('DRecoards');
       const listItem = document.createElement('li');
