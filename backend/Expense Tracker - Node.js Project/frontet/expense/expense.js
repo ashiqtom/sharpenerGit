@@ -4,6 +4,7 @@ const baseUrl = 'http://localhost:3000';
 
 const showpagination=async(data)=>{
   try{
+    document.getElementById('expenseList').innerHTML='';
     const pagination=document.getElementById('expensePagination')
     pagination.innerHTML='';
     
@@ -42,7 +43,10 @@ const getExpenses=async(page=1)=>{
     });
     
     showpagination(expensesResponse.data);
-    displayExpenseOnScreen(expensesResponse.data.expenses);
+      expensesResponse.data.expenses.forEach(expenseDetails => {
+        displayExpenseOnScreen(expenseDetails);
+    });
+    
     return expensesResponse;
   } catch (err){
     console.log(err)
@@ -89,29 +93,27 @@ async function handleFormSubmit(event) {
   }
 }
 
-async function displayExpenseOnScreen(expenses) {
+async function displayExpenseOnScreen(expenseDetails) {
   try{
-    document.getElementById('expenseList').innerHTML='';
-    expenses.forEach(expenseDetails => {
-      const parentElem = document.getElementById('expenseList');
+    console.log(expenseDetails)    
+    const parentElem = document.getElementById('expenseList');
       
-      const listItem = document.createElement('li');
-      listItem.textContent = `${expenseDetails.amount} - ${expenseDetails.description} - ${expenseDetails.category}`;
+    const listItem = document.createElement('li');
+    listItem.textContent = `${expenseDetails.amount} - ${expenseDetails.description} - ${expenseDetails.category}`;
 
-      const deleteButton = document.createElement('button');
-      deleteButton.textContent = 'Delete';
-      deleteButton.onclick = async () => {
-        try {
-          const token = localStorage.getItem('token');
-          await axios.delete(`${baseUrl}/expenses/${expenseDetails.id}`,{headers:{"authorization":token}});
-          parentElem.removeChild(listItem);
-        } catch (error) {
-          console.error('Delete failed:', error);
-        }
-      };
-      listItem.appendChild(deleteButton);
-      parentElem.appendChild(listItem);
-    });
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.onclick = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        await axios.delete(`${baseUrl}/expenses/${expenseDetails.id}`,{headers:{"authorization":token}});
+        parentElem.removeChild(listItem);
+      } catch (error) {
+        console.error('Delete failed:', error);
+      }
+    };
+    listItem.appendChild(deleteButton);
+    parentElem.appendChild(listItem);
   }catch(err){
     console.log(err);
   }
