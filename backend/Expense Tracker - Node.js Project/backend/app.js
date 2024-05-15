@@ -1,17 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors'); 
-const sequelize = require('./util/database');
 const hemet=require('helmet');
 const morgan=require('morgan');
 const path = require('path');
 const fs=require('fs');
-require('dotenv').config();
-
+const dotenv=require('dotenv');
 const app = express();
+const sequelize = require('./util/database');
 
 app.use(bodyParser.json());
 app.use(cors()); 
+dotenv.config();
 app.use(hemet()); 
 const accessLogStream=fs.createWriteStream(
   path.join(__dirname,'access.log'),
@@ -47,11 +47,10 @@ app.use('/premium',premiumRoutes);
 app.use('/password',forgotRoutes);
 
 sequelize
-  //.sync({ force: true })
   .sync()
   .then(() => {
-    app.listen(3000, () => {
-      console.log(`Server is running on port 3000`);
+    app.listen(process.env.PORT || 3000, () => {
+      console.log(`Server is running on port ${process.env.PORT}`);
     });
   })
   .catch((err) => {
